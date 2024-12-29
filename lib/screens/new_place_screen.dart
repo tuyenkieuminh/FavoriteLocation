@@ -39,11 +39,9 @@ class _NewItemScreenState extends ConsumerState<NewItemScreen> {
       _formKey.currentState!.save();
 
       ref.read(favoritePlacesNotifier.notifier).addNewPlace(
-            Place(
-              title: _enteredTitle,
-              image: _pickedPicture!,
-              location: _placeLocation!,
-            ),
+              _enteredTitle,
+              _pickedPicture!,
+              _placeLocation!,
           );
 
       Navigator.of(context).pop();

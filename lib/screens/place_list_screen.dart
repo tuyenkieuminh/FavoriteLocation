@@ -1,4 +1,3 @@
-import 'package:favorite_places_new/models/place.dart';
 import 'package:favorite_places_new/providers/favorite_places_provider.dart';
 import 'package:favorite_places_new/screens/new_place_screen.dart';
 import 'package:favorite_places_new/screens/place_detail_screen.dart';
@@ -9,14 +8,22 @@ class PlaceListScreen extends ConsumerStatefulWidget {
   const PlaceListScreen({super.key});
 
   @override
-  ConsumerState<PlaceListScreen> createState() => _PlaceListScreenState();
+  ConsumerState<PlaceListScreen> createState() { return _PlaceListScreenState();}
 }
 
 class _PlaceListScreenState extends ConsumerState<PlaceListScreen> {
-  List<Place> _placeList = [];
+  late Future<void> _loadPlace;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadPlace = ref.read(favoritePlacesNotifier.notifier).loadPlace();
+  }
 
   @override
   Widget build(BuildContext context) {
+  final _placeList = ref.watch(favoritePlacesNotifier);
     Widget content = Center(
       child: Text(
         "No place added yet.",
@@ -25,7 +32,6 @@ class _PlaceListScreenState extends ConsumerState<PlaceListScreen> {
             ),
       ),
     );
-    _placeList = ref.watch(favoritePlacesNotifier);
     if (_placeList.isNotEmpty) {
       content = ListView.builder(
         itemCount: _placeList.length,
@@ -91,7 +97,11 @@ class _PlaceListScreenState extends ConsumerState<PlaceListScreen> {
           ),
         ],
       ),
-      body: content,
+      body: FutureBuilder(future: _loadPlace, builder: (ctx, snapshot) => snapshot.connectionState == ConnectionState.waiting ? 
+        const Center(
+          child: CircularProgressIndicator(),
+        ) : content
+      ),
     );
   }
 }
